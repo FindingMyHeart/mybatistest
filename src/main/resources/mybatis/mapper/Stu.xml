@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="test" >
+    <select id="selectByPrimaryKey" resultType="com.roncoo.education.pojo.Stu" parameterType="java.lang.Integer" >
+        SELECT * FROM stu s WHERE s.id = #{value}
+    </select>
+
+    <resultMap id="teacherMap" type="com.roncoo.education.pojo.Teacher">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="students" ofType="com.roncoo.education.pojo.Student" column="id">
+            <id column="sid" property="id"/>
+            <result column="sname" property="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getTeachers" resultMap="teacherMap">
+        SELECT
+        t.id,
+        t.name,
+        t.class_name,
+        s.id as sid,
+        s.name as sname
+        FROM teacher t
+        LEFT JOIN student s
+        ON t.id = s.teacher_id
+    </select>
+
+    <resultMap id="studentMap" type="com.roncoo.education.pojo.Student">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="teacher_id" property="teacherId"/>
+        <association property="teacher" select="getTeacher" column="teacher_id" javaType="com.roncoo.education.pojo.Teacher">
+
+        </association>
+    </resultMap>
+
+    <select id="getStudents" parameterType="Integer" resultMap="studentMap">
+        SELECT
+        s.id,
+        s.name,
+        s.teacher_id
+        FROM student s
+        WHERE teacher_id = #{id}
+    </select>
+
+</mapper>

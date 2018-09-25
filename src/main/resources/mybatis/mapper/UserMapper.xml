@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.roncoo.education.mapper.UserMapper" >
+
+
+    <sql id="selector">
+        select * from user
+    </sql>
+
+    <select id="findUserById" parameterType="java.lang.Integer" resultType="com.roncoo.education.pojo.User">
+        SELECT  *
+        FROM  user
+        WHERE id = #{v}
+    </select>
+    <select id="findUserByUserName" parameterType="java.lang.String" resultType="com.roncoo.education.pojo.User">
+       	select * from user where username like "%"#{haha}"%"
+    </select>
+
+    <insert id="insertUser" parameterType="com.roncoo.education.pojo.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT  INTO
+        user (username,birthday,address,sex)
+        VALUES (#{username},#{birthday},#{address},#{sex})
+    </insert>
+
+    <update id="updateUserById" parameterType="com.roncoo.education.pojo.User">
+        UPDATE user
+        SET
+        username = #{username},
+        sex = #{sex},
+        birthday = #{birthday},
+        address = #{address}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUserById" parameterType="Integer">
+        DELETE FROM user
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findUserByQuery" parameterType="com.roncoo.education.pojo.QueryVo" resultType="com.roncoo.education.pojo.User">
+        SELECT * FROM user WHERE username like "%"#{user.username}"%"
+    </select>
+
+    <select id="countUser" resultType="Integer">
+        SELECT COUNT(*) FROM user
+    </select>
+
+    <select id="selectUserBySexAndUserName" parameterType="com.roncoo.education.pojo.User" resultType="com.roncoo.education.pojo.User">
+--         SELECT  * FROM user
+        <include refid="selector"/>
+--         where 标签会去掉第一个前and
+        <where>
+            <if test="sex != null and sex != ''">
+                sex = #{sex}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+        </where>
+    </select>
+
+    <!--&lt;!&ndash;(1,2,3)&ndash;&gt;-->
+    <!--<select id="selectuserByIds" parameterType="com.roncoo.education.pojo.QueryVo" resultType="com.roncoo.education.pojo.User">-->
+        <!--<include refid="selector"/>-->
+        <!--<where>-->
+<!--&#45;&#45;             id in-->
+            <!--<foreach collection="idsList" item="id" separator="," open="id in (" close=")">-->
+                <!--#{id}-->
+            <!--</foreach>-->
+        <!--</where>-->
+    <!--</select>-->
+
+    <!--(1,2,3)-->
+    <select id="selectuserByIds" parameterType="com.roncoo.education.pojo.QueryVo" resultType="com.roncoo.education.pojo.User">
+        <include refid="selector"/>
+        <where>
+            --             id in
+            <foreach collection="list" item="id" separator="," open="id in (" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectuserByIds2" parameterType="com.roncoo.education.pojo.QueryVo" resultType="com.roncoo.education.pojo.User">
+        <include refid="selector"/>
+        <where>
+--                  id in
+            <foreach collection="idsList" item="id" separator="," open="id in (" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>
